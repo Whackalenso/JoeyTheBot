@@ -34,7 +34,7 @@ async def on_ready():
 		bot.load_extension(f"Bot.cogs.{c[:-3]}")
 
 	print("Bot online\nSystems a go-go")
-	await bot.change_presence(activity=discord.Game(name="PPC"))
+	await bot.change_presence(activity=discord.Activity(name="PPC",type=discord.ActivityType.watching))
 	
 @bot.command()
 async def roleAmount(ctx, *, roleStr):
