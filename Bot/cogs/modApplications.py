@@ -1,12 +1,20 @@
 import discord
 from discord.ext import commands
 from discord.utils import get
+import os
 
 class ModApplications(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.anonymousExtraFooter = " React with ✅ to reveal who this person is. Do .talk <id of this message> <message> to communicate with this person while keeping it anonymous."
         self.userApplicationData = {}
+
+    def updateData(self, data):
+        for c in os.listdir('Bot/cogs'):
+            if ('ModApplications' != c.capitalize()):
+                cog = self.bot.get_cog(c.capitalize())
+                if (cog != None):
+                    cog.bot.botData = data
 
     @commands.Cog.listener()
     async def on_ready(self):
@@ -70,6 +78,7 @@ class ModApplications(commands.Cog):
 
                     #bot.botData['applicationData']['userApplicationData'] = bot.userApplicationData
                     self.bot.botData['applicationData']['userApplicationData'][str(message.author.id)] = data
+                    self.updateData(self.bot.botData)
                     await self.bot.database.save_data(self.bot.botData)
 
                 elif (data.get('activeQuestionSession') != None):
@@ -77,7 +86,7 @@ class ModApplications(commands.Cog):
 
     
 
-    @commands.command() #add ability do update and start over and communicate and reveal person to give mod
+    @commands.command()
     async def apply(self, ctx):
         userData = self.bot.botData['applicationData']['userApplicationData'].get(str(ctx.author.id))
         if (userData['sessionActive'] if userData != None else False): #check if none

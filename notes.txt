@@ -1,0 +1,4 @@
+Help command
+Alert for sending stuff in the wrong channel
+Analytics for activity
+Get rid of ability to verify if the member suddenly is ungood (for example if they unaccept the terms)

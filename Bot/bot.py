@@ -14,6 +14,13 @@ bot.botRole = ''
 bot.database = ''
 bot.botData = {}
 
+def updateData(data, **extra):
+	exclude = extra.get('exclude')
+	for c in os.listdir('Bot/cogs'):
+		if (exclude != c.capitalize()):
+			cog = bot.get_cog(c.capitalize())
+			cog.bot.botData = data
+
 @bot.event
 async def on_command_error(ctx, error): #.
 	if isinstance(error, commands.MissingRequiredArgument):
@@ -89,6 +96,6 @@ async def on_message(message):
 # 	embed.add_field(name="Other", value=otherValue)
 # 	embed.set_footer(text="All commands all case insensitive (whether you use capital letters doesn't matter for typing a command). Also don't actually include the <>.")
 
-with open('Bot/token.txt') as t:
+with open('./token.txt') as t:
 	token = t.read()
-bot.run(token) #ha L u guys dont have token.txt
+bot.run(token)

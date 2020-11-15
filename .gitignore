@@ -1,10 +1,4 @@
 test.py
 __pycache__
 debug.log
-notes.txt
 tempData/
-
-discordDatabase.py
-Procfile
-requirements.txt
-token.txt

@@ -3,6 +3,7 @@ from discord.ext import commands
 from discord.utils import get
 import asyncio
 import time
+import os
 
 class Verification(commands.Cog):
     def __init__(self, bot):
@@ -19,6 +20,13 @@ class Verification(commands.Cog):
         self.getsPingedToVerifyPeopleRole = get(guild.roles, id=758120042520248331)
         self.notVerifiedRole = get(guild.roles, id=755146208623984741)
         self.botRole = get(guild.roles, id=755137354888511498)
+
+    def updateData(self, data):
+        for c in os.listdir('Bot/cogs'):
+            if ('Verification' != c.capitalize()):
+                cog = self.bot.get_cog(c.capitalize())
+                if (cog != None):
+                    cog.bot.botData = data
 
     @commands.Cog.listener()
     async def on_member_join(self, member):
@@ -67,6 +75,7 @@ class Verification(commands.Cog):
                     userForVerificationMsg = get(channel.guild.members, id=int(member)) #member (before, members were discord.Member, but now I'm changing them to discord.Member.id)
                     reactionForVerification = True
                     self.bot.botData['verifyMsgs'].pop(member)
+                    self.updateData(self.bot.botData)
                     break
 
             if (reactionForVerification == True):
@@ -115,16 +124,16 @@ class Verification(commands.Cog):
                         await member.add_roles(self.peopleRole)
                         #await putScheduleInChannel(member, bot.botData['schedules'][str(member.id)]) #bot.schedules[member.id]
                         await ctx.send(f"**{member.nick}** is now verified.")
-                        self.bot.botData['schedules'].pop(str(member.id))
-                        await self.bot.database.save_data(self.bot.botData)
+                        #self.bot.botData['schedules'].pop(str(member.id))
+                        #await self.bot.database.save_data(self.bot.botData)
 
                     usersAccepted = await self._getUsersAccepted()
                     if (member not in usersAccepted):
                         await ctx.send("This person has not accepted the terms of agreement.")
                     if (member.nick == None):
                         await ctx.send("This person has not set their name.")
-                    if (str(member.id) not in self.bot.botData['schedules']):
-                        await ctx.send("This person has not set their schedule. If this person isn't a student, they can just say **.setSchedule not student**.")
+                    #if (str(member.id) not in self.bot.botData['schedules']):
+                        #await ctx.send("This person has not set their schedule. If this person isn't a student, they can just say **.setSchedule not student**.")
                 else:
                     await ctx.send("This person is already verified.")
             else:
@@ -150,6 +159,7 @@ class Verification(commands.Cog):
         msg = await self.modVerify.send(content=f"{self.getsPingedToVerifyPeopleRole.mention}", embed=embed)
         await msg.add_reaction("✅")
         self.bot.botData['verifyMsgs'][str(user.id)] = msg.id
+        self.updateData(self.bot.botData)
         await self.bot.database.save_data(self.bot.botData)
 
     @commands.command()
