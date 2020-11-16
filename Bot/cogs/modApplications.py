@@ -10,7 +10,7 @@ class ModApplications(commands.Cog):
         self.userApplicationData = {}
 
     def updateData(self, data):
-        for c in os.listdir('Bot/cogs'):
+        for c in os.listdir('JoeyTheBot/Bot/cogs'):
             if ('ModApplications' != c.capitalize()):
                 cog = self.bot.get_cog(c.capitalize())
                 if (cog != None):

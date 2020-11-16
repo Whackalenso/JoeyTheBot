@@ -22,7 +22,7 @@ class Verification(commands.Cog):
         self.botRole = get(guild.roles, id=755137354888511498)
 
     def updateData(self, data):
-        for c in os.listdir('Bot/cogs'):
+        for c in os.listdir('JoeyTheBot/Bot/cogs'):
             if ('Verification' != c.capitalize()):
                 cog = self.bot.get_cog(c.capitalize())
                 if (cog != None):

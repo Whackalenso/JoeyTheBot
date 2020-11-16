@@ -16,7 +16,7 @@ bot.botData = {}
 
 def updateData(data, **extra):
 	exclude = extra.get('exclude')
-	for c in os.listdir('Bot/cogs'):
+	for c in os.listdir('JoeyTheBot/Bot/cogs'):
 		if (exclude != c.capitalize()):
 			cog = bot.get_cog(c.capitalize())
 			cog.bot.botData = data
@@ -37,7 +37,7 @@ async def on_ready():
 	bot.database = discordDatabase.Database('Server Soap', 766520404613267476, bot)
 	bot.botData = await bot.database.get_data()
 
-	for c in os.listdir('Bot/cogs'):
+	for c in os.listdir('JoeyTheBot/Bot/cogs'):
 		bot.load_extension(f"Bot.cogs.{c[:-3]}")
 
 	print("Bot online\nSystems a go-go")
