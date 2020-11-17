@@ -1,2 +1,3 @@
 discord
 dnspython
+matplotlib
