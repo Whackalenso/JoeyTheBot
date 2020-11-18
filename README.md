@@ -2,7 +2,7 @@
 
 A Discord moderation bot with loads of features
 
-Prefix is .<command>
+Prefix is .[command]
 
 ## Commands:
 
