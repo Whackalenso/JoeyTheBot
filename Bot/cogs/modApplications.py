@@ -9,16 +9,14 @@ class ModApplications(commands.Cog):
         self.anonymousExtraFooter = " React with ✅ to reveal who this person is. Do .talk <id of this message> <message> to communicate with this person while keeping it anonymous."
         self.userApplicationData = {}
 
+        self.applicationQuestions = self.bot.botData['applicationData']['questions']
+
     def updateData(self, data):
-        for c in os.listdir('JoeyTheBot/Bot/cogs'):
+        for c in os.listdir(f'{self.bot.mainFolder}/Bot/cogs'):
             if ('ModApplications' != c.capitalize()):
                 cog = self.bot.get_cog(c.capitalize())
                 if (cog != None):
                     cog.bot.botData = data
-
-    @commands.Cog.listener()
-    async def on_ready(self):
-        self.applicationQuestions = self.bot.botData['applicationData']['questions']
 
     @commands.Cog.listener()
     async def on_member_update(self, before, after):
@@ -40,12 +38,13 @@ class ModApplications(commands.Cog):
 
         elif (payload.user_id != self.bot.user.id):
             user = self.bot.get_user(payload.user_id)
-            if (user.dm_channel == None):
-                try:
-                    await user.create_dm()
-                except discord.errors.HTTPException:
-                    print("There's an error on 192.")
-            message = await user.dm_channel.fetch_message(payload.message_id)
+            if (not user.bot):
+                if (user.dm_channel == None):
+                    try:
+                        await user.create_dm()
+                        message = await user.dm_channel.fetch_message(payload.message_id)
+                    except discord.errors.HTTPException as e:
+                        print(e)
                 
             questions = self.bot.botData['applicationData']['userApplicationData'][str(payload.user_id)].get('modQuestions')
             if (questions != None):

@@ -7,22 +7,23 @@ import os
 
 class Verification(commands.Cog):
     def __init__(self, bot):
-        guild = bot.get_guild(755021484686180432)
         self.bot = bot
         self.acceptMsgId = 758486195985973269
         self.userAcceptTimes = {}
-
-        self.welcome_verify = bot.get_channel(755133977173426312)
-        self.modVerify = bot.get_channel(758376336984899596)
-        self.termsChannel = bot.get_channel(755133859682713741)
         
+        #if cogs got loaded before the bot runs, put this in an on_ready
+        self.welcome_verify = self.bot.get_channel(755133977173426312)
+        self.modVerify = self.bot.get_channel(758376336984899596)
+        self.termsChannel = self.bot.get_channel(755133859682713741)
+        
+        guild = self.bot.get_guild(755021484686180432)
         self.peopleRole = get(guild.roles, id=755135494677070005)
         self.getsPingedToVerifyPeopleRole = get(guild.roles, id=758120042520248331)
         self.notVerifiedRole = get(guild.roles, id=755146208623984741)
         self.botRole = get(guild.roles, id=755137354888511498)
 
     def updateData(self, data):
-        for c in os.listdir('JoeyTheBot/Bot/cogs'):
+        for c in os.listdir(f'{self.bot.mainFolder}/Bot/cogs'):
             if ('Verification' != c.capitalize()):
                 cog = self.bot.get_cog(c.capitalize())
                 if (cog != None):

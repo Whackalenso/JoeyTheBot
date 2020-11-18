@@ -1,4 +1,4 @@
-import discord #.
+import discord
 from discord.ext import commands
 from discord.utils import get
 import discordDatabase
@@ -13,13 +13,18 @@ bot.guild = ''
 bot.botRole = ''
 bot.database = ''
 bot.botData = {}
+for d in next(os.walk('.'))[1]:
+	if (not d.startswith('.')):
+		bot.mainFolder = d
+		break
 
-def updateData(data, **extra):
+def updateData(database, data, **extra):
 	exclude = extra.get('exclude')
-	for c in os.listdir('JoeyTheBot/Bot/cogs'):
-		if (exclude != c.capitalize()):
-			cog = bot.get_cog(c.capitalize())
+	for name in bot.cogs:
+		if (exclude != name):
+			cog = bot.get_cog(name) # we do this instead of just using c because according to the docs, its just readonly
 			cog.bot.botData = data
+			cog.bot.database = database
 
 @bot.event
 async def on_command_error(ctx, error): #.
@@ -32,13 +37,17 @@ async def on_command_error(ctx, error): #.
 
 @bot.event
 async def on_ready():
-	bot.guild = bot.get_guild(755021484686180432)
-	bot.botRole = get(bot.guild.roles, id=755137354888511498)
 	bot.database = discordDatabase.Database('Server Soap', 766520404613267476, bot)
 	bot.botData = await bot.database.get_data()
 
-	for c in os.listdir('JoeyTheBot/Bot/cogs'):
-		bot.load_extension(f"JoeyTheBot.Bot.cogs.{c[:-3]}")
+	bot.guild = bot.get_guild(755021484686180432)
+	bot.botRole = get(bot.guild.roles, id=755137354888511498)
+
+	for c in os.listdir(f'{bot.mainFolder}/Bot/cogs'):
+		if (c != '__pycache__'):
+			cogStr = f"{bot.mainFolder}.Bot.cogs.{c[:-3]}"
+			bot.load_extension(cogStr)
+			print(f"Loaded cog: {cogStr}")
 
 	print("Bot online\nSystems a go-go")
 	await bot.change_presence(activity=discord.Activity(name="PPC",type=discord.ActivityType.watching))
@@ -50,28 +59,6 @@ async def roleAmount(ctx, *, roleStr):
 		await ctx.send(f"**{len(role.members)}** people have this role.")
 	else:
 		await ctx.send("I can't find that role. Don't ping the role, just say what it is. (And it's case sensitive)")
-
-@bot.command()
-async def iDontHaveAGroup(ctx):
-	role = get(ctx.guild.roles, id=766382143999574037) #Looking For Group role
-	if (role not in ctx.author.roles):
-		await ctx.author.add_roles(role)
-		await ctx.send("You now have the **Looking For Group** role.")
-	else:
-		await ctx.send("You already have this role.")
-
-@bot.command()
-async def iHaveAGroup(ctx):
-	mrLeeHistoryRole = get(ctx.guild.roles, id=755232437394604123)
-	role = get(ctx.guild.roles, id=766382143999574037) #Looking For Group role
-	if (mrLeeHistoryRole in ctx.author.roles):
-		if (role in ctx.author.roles):
-			await ctx.author.remove_roles(role)
-			await ctx.send("The **Looking For Group** role has now been removed from your roles.")
-		else:
-			await ctx.send("You already don't have this role.")
-	else:
-		await ctx.send("You don't have Mr. Lee for history so you can't use this command.")
 
 @bot.event
 async def on_message(message):
@@ -96,6 +83,7 @@ async def on_message(message):
 # 	embed.add_field(name="Other", value=otherValue)
 # 	embed.set_footer(text="All commands all case insensitive (whether you use capital letters doesn't matter for typing a command). Also don't actually include the <>.")
 
-with open('./token.txt') as t:
-	token = t.read()
-bot.run(token)
+if (__name__ == '__main__'):
+	with open('./token.txt') as t: #prob dont need to do ./ but eh
+		token = t.read()
+	bot.run(token)

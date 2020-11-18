@@ -13,7 +13,7 @@ class Analytics(commands.Cog):
         plt.savefig('graph.png')
         plt.close()
         with open('graph.png', 'rb') as f:
-            file=discord.File(f)
+            graph = discord.File(f)
             await ctx.send(file=file)
     
 def setup(bot):

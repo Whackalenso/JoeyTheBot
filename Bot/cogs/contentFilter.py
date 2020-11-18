@@ -6,12 +6,29 @@ import re
 class ContentFilter(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        with open('JoeyTheBot/Bot/profanity_wordlist.txt', 'r') as f: 
+        with open(f'{bot.mainFolder}/Bot/profanity_wordlist.txt', 'r') as f: 
             self.word_list = f.read().splitlines()
         for word in range(len(self.word_list)):
             self.word_list[word] = list(profanity._generate_patterns_from_word(self.word_list[word]))
         self.enabled = True
         self.wordsThatNeedToBeByThemselves = ['ass', 'cum', 'tit', 'semen', 'anal', 'cock']
+
+    async def onOff(self, _ctx, _bool, _string):
+        if (_ctx.message.author.guild_permissions.administrator):
+            if (self.enabled == _bool):
+                await _ctx.send(f"I'm already {_string}d.")
+            else:
+                self.enabled = _bool
+        else:
+            await _ctx.send("You need admin perms to do this.")
+
+    @commands.command()
+    async def enable(self, ctx):
+        await self.onOff(ctx, True, "enable")
+
+    @commands.command()
+    async def disable(self, ctx):
+        await self.onOff(ctx, False, "disable")
 
     @commands.Cog.listener()
     async def on_message(self, message):
@@ -22,7 +39,6 @@ class ContentFilter(commands.Cog):
             await message.channel.send(f"{message.author.name}'s message contained inappropriate content so it was deleted.")
             print(f"{message.content} | {word} | {message.author}")
             punished = True
-            await self.bot.process_commands(message)
 
         def filterContent(content, word):
             wordIndex = 0
@@ -103,25 +119,6 @@ class ContentFilter(commands.Cog):
 
         if ((message.author.id == 235088799074484224) & (message.channel.id == 760301930437148722)):
             await message.delete()
-
-        await self.bot.process_commands(message)
-
-    async def onOff(self, _ctx, _bool, _string):
-        if (_ctx.message.author.guild_permissions.administrator):
-            if (self.enabled == _bool):
-                await _ctx.send(f"I'm already {_string}d.")
-            else:
-                self.enabled = _bool
-        else:
-            await _ctx.send("You need admin perms to do this.")
-
-    @commands.command()
-    async def enable(self, ctx):
-        await self.onOff(ctx, True, "enable")
-
-    @commands.command()
-    async def disable(self, ctx):
-        await self.onOff(ctx, False, "disable")
 
 def setup(bot):
     bot.add_cog(ContentFilter(bot))
