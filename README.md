@@ -6,14 +6,16 @@ Prefix is .[command]
 
 ## Commands:
 
-Analytics:
+### Analytics:
+  
   statistics                  
-ContentFilter:
+
+### ContentFilter:
   
   disable                     
   enable                      
 
-ModApplications:
+### ModApplications:
   
   apply                       
   deleteApplication           
@@ -21,12 +23,12 @@ ModApplications:
   talk                        
   toggleAnonymousApplications 
 
-MoveMessages:
+### MoveMessages:
   
   moveMessage                 
   moveMessages                
 
-Verification:
+### Verification:
   
   setName                     
   verify                      
