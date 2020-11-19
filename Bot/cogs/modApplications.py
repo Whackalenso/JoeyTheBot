@@ -160,6 +160,7 @@ class ModApplications(commands.Cog):
             await msg.add_reaction('👎')
             if (anonymousApplications): 
                 await msg.add_reaction('✅')
+            await msg.pin()
         else:
             msg = await modMsgChannel.fetch_message(self.bot.botData['applicationData']['userApplicationData'][str(_user.id)]['modMsg'])
             embed = msg.embeds[0]
