@@ -1,3 +1,34 @@
 # JoeyTheBot
 
-Ok there was a thing and now all the commits are gone besides the initial one heh
+A Discord moderation bot with loads of features
+
+Prefix is .[command]
+
+## Commands:
+
+### Analytics:
+  
+  statistics                  
+
+### ContentFilter:
+  
+  disable                     
+  enable                      
+
+### ModApplications:
+  
+  apply                       
+  deleteApplication           
+  setQuestions                
+  talk                        
+  toggleAnonymousApplications 
+
+### MoveMessages:
+  
+  moveMessage                 
+  moveMessages                
+
+### Verification:
+  
+  setName                     
+  verify                      
