@@ -75,6 +75,15 @@ class Analytics(commands.Cog):
                             messagesByHour[hour] = 1
                         totalMessages.append(m)
                 messageAmounts[_name] = messagesByHour
+            #gets more than just the important channels for not graph
+            for c in ctx.guild.text_channels:
+                if (c.id not in importantChannels.values()):
+                    history = await c.history(limit=None, after=yesterday).flatten()
+                    for m in history:
+                        createdAt = m.created_at - timedelta(hours=8)
+                        if (createdAt.date() == today):
+                            totalMessages.append(m)
+
             with open('test.json', 'w') as f:
                 json.dump(messageAmounts, f, indent=4)
 
@@ -155,7 +164,7 @@ class Analytics(commands.Cog):
             )
             _file = discord.File("./graph.png", filename="graph.png")
             embed.set_image(url="attachment://graph.png")
-            embed.set_footer(text='Click the image to make it bigger.')
+            embed.set_footer(text="The graph represents only the data from important channels. (Click it to make it larger and zoom in if you're on mobile.)")
             await ctx.send(file=_file, embed=embed)
             
 
