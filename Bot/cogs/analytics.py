@@ -2,6 +2,7 @@ import discord
 from discord.ext import commands
 from typing import Union
 import matplotlib.pyplot as plt
+import numpy as np
 from datetime import datetime
 from datetime import timedelta
 import time
@@ -35,30 +36,32 @@ class Analytics(commands.Cog):
 
     @commands.command()
     async def statistics(self, ctx, *, timeFrame:Union[str, None]):
-        importantChannels = [
-            755021484686180437, #general
-            758871523799990292, #images
-            755133977173426312, #welcome-verify
-            755157589154594876, #questions
-            776499496543715379, #gifs
-            773401331321929748, #politics
-            755615740568272958, #music
-            756192693910110208, #memes
-            778018663478722581, #books
-            773383060653604874, #reddit
-            774141838218100756, #the-twilight-zone
-            755980167356219403, #gaming
-            755522123308728411  #bot-commands
-        ]
+        importantChannels = {
+            'general': 755021484686180437,
+            'images': 758871523799990292,
+            'gifs': 776499496543715379,
+            'politics': 773401331321929748,
+            'music': 755615740568272958,
+            'memes': 756192693910110208,
+            'books': 778018663478722581,
+            'reddit': 773383060653604874,
+            'the-twilight-zone': 774141838218100756,
+            'gaming': 755980167356219403,
+            'bot-commands': 755522123308728411,
+            'welcome-verify': 755133977173426312,
+            'questions': 755157589154594876,
+        }
         messageAmounts = {}
 
         if (timeFrame.lower() == 'today'):
+            #getting data
+            totalMessages = []
             subtract = 86400
             if (datetime.now().hour > 8):
                 subtract *= 2
             yesterday = datetime.utcfromtimestamp(time.time() - subtract) #utc
             today = datetime.now().date() #local
-            for _id in importantChannels:
+            for _name, _id in importantChannels.items():
                 channel = self.bot.get_channel(_id)
                 history = await channel.history(limit=None, after=yesterday).flatten()
                 messagesByHour = {}
@@ -70,15 +73,91 @@ class Analytics(commands.Cog):
                             messagesByHour[hour] += 1
                         else:
                             messagesByHour[hour] = 1
-                messageAmounts[_id] = messagesByHour
+                        totalMessages.append(m)
+                messageAmounts[_name] = messagesByHour
             with open('test.json', 'w') as f:
                 json.dump(messageAmounts, f, indent=4)
-            await ctx.send("The data has been printed to the console.")
 
-            # embed = discord.Embed(
-            #     title="Server Analytics for today",
-            #     color=discord.Color.blue()
-            # )
+            #member data
+            memberMsgs = {}
+            for m in totalMessages:
+                if (not m.author.bot):
+                    auth = m.author.display_name
+                    if (memberMsgs.get(auth)):
+                        memberMsgs[auth] += 1
+                    else:
+                        memberMsgs[auth] = 1
+
+            top3Membs = []
+            while len(top3Membs) < 3:
+                topMemb = ''
+                for a, n in memberMsgs.items(): #author, number
+                    if (a not in top3Membs):
+                        if (topMemb == ''):
+                            topMemb = a
+                            continue
+
+                        _top = topMemb if isinstance(topMemb, str) else topMemb[0]
+                        if (n > memberMsgs[_top]):
+                            topMemb = a
+
+                        if (n == memberMsgs[_top]):
+                            if (isinstance(topMemb, list)):
+                                topMemb.append(a)
+                            else:
+                                topMemb = [a, topMemb]
+                        
+                top3Membs.append(topMemb)
+
+            #making graph
+            plt.figure(figsize=(20,5))
+            N = 24
+            ind = np.arange(N)
+            width = 1/len(importantChannels)
+            times = [str(i) for i in range(24)] #excludes 24
+            iteration = 0
+            for _name, _dict in messageAmounts.items():
+                #Example: plt.bar(ind, men_means, width, label='Men')
+                values = []
+                for _hour, _num in _dict.items():
+                    while _hour - len(values) >= 1:
+                        values.append(0)
+                    values.append(_num)
+                for _ in range(24 - len(values)):
+                    values.append(0)
+
+                plt.bar(ind + (width * iteration), tuple(values), width, label=_name)
+                iteration += 1
+
+            plt.ylabel('Messages')
+            plt.xlabel('Hours')
+            plt.xticks(ind + width, tuple(times)) # / 2
+            plt.legend(loc='best')
+            plt.savefig('graph.png', bbox_inches = 'tight')
+            plt.close()
+
+            #sending graph
+            memberStr = '\n`#{}` {} | {} messages | {:.0%} of activity'
+            top3Str = ''
+            for i in range(len(top3Membs)):
+                name = top3Membs[i]
+                if (isinstance(name, list)):
+                    msgs = memberMsgs[name[0]]
+                    name = ' & '.join(name)
+                else:
+                    msgs = memberMsgs[name]
+                top3Str = top3Str + memberStr.format(i + 1, name, msgs, msgs/len(totalMessages))
+
+            embed = discord.Embed(
+                title="Server Analytics for today",
+                description=f'**Total messages:** {len(totalMessages)}\n**Top 3 members:**{top3Str}',
+                color=discord.Color.blue()
+            )
+            _file = discord.File("./graph.png", filename="graph.png")
+            embed.set_image(url="attachment://graph.png")
+            embed.set_footer(text='Click the image to make it bigger.')
+            await ctx.send(file=_file, embed=embed)
+            
 
         # plt.plot([1, 2], [1, 2])
         # plt.savefig('graph.png')
