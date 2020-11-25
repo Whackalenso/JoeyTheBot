@@ -77,7 +77,7 @@ class Analytics(commands.Cog):
                 messageAmounts[_name] = messagesByHour
             #gets more than just the important channels for not graph
             for c in ctx.guild.text_channels:
-                if (c.id not in importantChannels.values()):
+                if ((c.id not in importantChannels.values()) & (c.id != 775803582720639017) & (c.id != 773283267411443722)): #counting, spam
                     history = await c.history(limit=None, after=yesterday).flatten()
                     for m in history:
                         createdAt = m.created_at - timedelta(hours=8)
