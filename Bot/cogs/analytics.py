@@ -36,6 +36,7 @@ class Analytics(commands.Cog):
 
     @commands.command()
     async def statistics(self, ctx, *, timeFrame:Union[str, None]):
+        #deal with this for other servers
         importantChannels = {
             'general': 755021484686180437,
             'images': 758871523799990292,
@@ -119,6 +120,11 @@ class Analytics(commands.Cog):
                 top3Membs.append(topMemb)
 
             #making graph
+            cm = plt.get_cmap('Paired') #gist_rainbow hsv best:tab20 Spectral
+            colors = [cm(1.*i/len(12)) for i in range(len(12))]
+            colors.append((0.0, 0.0, 0.0))
+            ax = plt.gca()
+            ax.set_prop_cycle(color=colors)
             plt.figure(figsize=(20,5))
             N = 24
             ind = np.arange(N)

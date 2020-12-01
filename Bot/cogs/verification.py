@@ -4,6 +4,7 @@ from discord.utils import get
 import asyncio
 import time
 import os
+from typing import Union
 
 class Verification(commands.Cog):
     def __init__(self, bot):
@@ -22,6 +23,14 @@ class Verification(commands.Cog):
         self.notVerifiedRole = get(guild.roles, id=755146208623984741)
         self.botRole = get(guild.roles, id=755137354888511498)
 
+        self.servers = [755021484686180432]
+
+    async def cog_check(self, ctx):
+        if isinstance(ctx, commands.Context):
+            return ctx.guild.id in self.servers
+        else:
+            return ctx.id in self.servers
+
     def updateData(self, data):
         for c in os.listdir(f'{self.bot.mainFolder}/Bot/cogs'):
             if ('Verification' != c.capitalize()):
@@ -31,6 +40,9 @@ class Verification(commands.Cog):
 
     @commands.Cog.listener()
     async def on_member_join(self, member):
+        if not await self.cog_check(member.guild):
+            return
+            
         if (member.bot):
             await asyncio.sleep(5)
             await member.remove_roles(self.notVerifiedRole)
@@ -38,6 +50,9 @@ class Verification(commands.Cog):
 
     @commands.Cog.listener()
     async def on_member_update(self, before, after): # this is for getting roles instead of .setschedule
+        if not await self.cog_check(before.guild):
+            return
+            
         if ((self.notVerifiedRole in after.roles) & (before.roles != after.roles) & (not self._schoolRoleCheck(before))):
             isUserReady = await self._isUserReady(after)
             if (isUserReady):
@@ -45,6 +60,9 @@ class Verification(commands.Cog):
 
     @commands.Cog.listener()
     async def on_raw_reaction_add(self, payload): #on_reaction_add(reaction, user:discord.Member)
+        if not await self.cog_check(self.bot.get_guild(payload.guild_id)):
+            return
+            
         checkEmoji = '✅'
         user = payload.member
         if ((user.bot == False) if user != None else False):
@@ -114,33 +132,33 @@ class Verification(commands.Cog):
         
         return False
 
-    @commands.command()
-    async def verify(self, ctx, *, member:discord.Member):
-        if (ctx.message.author.guild_permissions.administrator):
-            if (member.bot == False):
-                if (self.notVerifiedRole in member.roles):
-                    isUserReady = await self._isUserReady(member)
-                    if (isUserReady):
-                        await member.remove_roles(self.notVerifiedRole)
-                        await member.add_roles(self.peopleRole)
-                        #await putScheduleInChannel(member, bot.botData['schedules'][str(member.id)]) #bot.schedules[member.id]
-                        await ctx.send(f"**{member.nick}** is now verified.")
-                        #self.bot.botData['schedules'].pop(str(member.id))
-                        #await self.bot.database.save_data(self.bot.botData)
+    # @commands.command()
+    # async def verify(self, ctx, *, member:discord.Member):
+    #     if (ctx.message.author.guild_permissions.administrator):
+    #         if (member.bot == False):
+    #             if (self.notVerifiedRole in member.roles):
+    #                 isUserReady = await self._isUserReady(member)
+    #                 if (isUserReady):
+    #                     await member.remove_roles(self.notVerifiedRole)
+    #                     await member.add_roles(self.peopleRole)
+    #                     #await putScheduleInChannel(member, bot.botData['schedules'][str(member.id)]) #bot.schedules[member.id]
+    #                     await ctx.send(f"**{member.nick}** is now verified.")
+    #                     #self.bot.botData['schedules'].pop(str(member.id))
+    #                     #await self.bot.database.save_data(self.bot.botData)
 
-                    usersAccepted = await self._getUsersAccepted()
-                    if (member not in usersAccepted):
-                        await ctx.send("This person has not accepted the terms of agreement.")
-                    if (member.nick == None):
-                        await ctx.send("This person has not set their name.")
-                    #if (str(member.id) not in self.bot.botData['schedules']):
-                        #await ctx.send("This person has not set their schedule. If this person isn't a student, they can just say **.setSchedule not student**.")
-                else:
-                    await ctx.send("This person is already verified.")
-            else:
-                await ctx.send("You can't verify a bot.")
-        else:
-            await ctx.send("You need admin perms to do this")
+    #                 usersAccepted = await self._getUsersAccepted()
+    #                 if (member not in usersAccepted):
+    #                     await ctx.send("This person has not accepted the terms of agreement.")
+    #                 if (member.nick == None):
+    #                     await ctx.send("This person has not set their name.")
+    #                 #if (str(member.id) not in self.bot.botData['schedules']):
+    #                     #await ctx.send("This person has not set their schedule. If this person isn't a student, they can just say **.setSchedule not student**.")
+    #             else:
+    #                 await ctx.send("This person is already verified.")
+    #         else:
+    #             await ctx.send("You can't verify a bot.")
+    #     else:
+    #         await ctx.send("You need admin perms to do this")
 
     async def _isUserReady(self, user:discord.Member):
         usersAccepted = await self._getUsersAccepted()

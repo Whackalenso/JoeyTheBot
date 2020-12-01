@@ -12,6 +12,10 @@ class ContentFilter(commands.Cog):
             self.word_list[word] = list(profanity._generate_patterns_from_word(self.word_list[word]))
         self.enabled = True
         self.wordsThatNeedToBeByThemselves = ['ass', 'cum', 'tit', 'semen', 'anal', 'cock']
+        self.servers = [755021484686180432]
+
+    async def cog_check(self, ctx):
+        return ctx.guild.id in self.servers
 
     async def onOff(self, _ctx, _bool, _string):
         if (_ctx.message.author.guild_permissions.administrator):
@@ -32,6 +36,9 @@ class ContentFilter(commands.Cog):
 
     @commands.Cog.listener()
     async def on_message(self, message):
+        if not await self.cog_check(message):
+            return
+            
         punished = False
 
         async def punish(word):

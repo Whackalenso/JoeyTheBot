@@ -8,8 +8,15 @@ class ModApplications(commands.Cog):
         self.bot = bot
         self.anonymousExtraFooter = " React with ✅ to reveal who this person is. Do .talk <id of this message> <message> to communicate with this person while keeping it anonymous."
         self.userApplicationData = {}
-
         self.applicationQuestions = self.bot.botData['applicationData']['questions']
+
+        self.servers = [755021484686180432]
+
+    async def cog_check(self, ctx):
+        if isinstance(ctx, commands.Context):
+            return ctx.guild.id in self.servers
+        else:
+            return ctx.id in self.servers
 
     def updateData(self, data):
         for c in os.listdir(f'{self.bot.mainFolder}/Bot/cogs'):
@@ -20,12 +27,18 @@ class ModApplications(commands.Cog):
 
     @commands.Cog.listener()
     async def on_member_update(self, before, after):
+        if not await self.cog_check(before.guild):
+            return
+
         modRole = get(after.guild.roles, id=755208276022657085)
         if ((self.bot.botData['applicationData']['userApplicationData'].get(str(after.id)) != None) & (modRole in after.roles) & (after.roles != before.roles)):
             await self._giveMod(after)
 
     @commands.Cog.listener()
     async def on_raw_reaction_add(self, payload): #on_reaction_add(reaction, user:discord.Member)
+        if not await self.cog_check(self.bot.get_guild(payload.guild_id)):
+            return
+            
         checkEmoji = '✅'
         user = payload.member
         if ((user.bot == False) if user != None else False):
@@ -55,6 +68,7 @@ class ModApplications(commands.Cog):
 
     @commands.Cog.listener()
     async def on_message(self, message):
+        # I dont do a check for this one because the message guild should be none anyways
 
         if (message.guild == None):
             data = self.bot.botData['applicationData']['userApplicationData'].get(str(message.author.id))
@@ -82,8 +96,6 @@ class ModApplications(commands.Cog):
 
                 elif (data.get('activeQuestionSession') != None):
                     await self._userHasResponded(message.author, message.content, data['activeQuestionSession'])
-
-    
 
     @commands.command()
     async def apply(self, ctx):

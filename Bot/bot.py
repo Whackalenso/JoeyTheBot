@@ -30,7 +30,7 @@ def updateData(database, data, **extra):
 async def on_command_error(ctx, error): #.
 	if isinstance(error, commands.MissingRequiredArgument):
 		await ctx.send('Use all required arguments please.')
-	elif isinstance(error, commands.CommandNotFound):
+	elif isinstance(error, commands.CommandNotFound) or isinstance(error, commands.errors.CheckFailure):
 		pass
 	else:
 		raise error
@@ -62,8 +62,9 @@ async def roleAmount(ctx, *, roleStr):
 
 @bot.event
 async def on_message(message):
-	if ((message.author.id == 690291831564533810) & (message.channel.id == 774365865273065492) &(len(message.attachments) > 0)): #that uesr id is macie and the channel id is cake
-		await message.pin()
+	if message.guild.id == 755021484686180432:
+		if ((message.author.id == 690291831564533810) & (message.channel.id == 774365865273065492) &(len(message.attachments) > 0)): #that uesr id is macie and the channel id is cake
+			await message.pin()
 
 	await bot.process_commands(message)
 
