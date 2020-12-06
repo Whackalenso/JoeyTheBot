@@ -105,7 +105,8 @@ class Verification(commands.Cog):
                     await userForVerificationMsg.remove_roles(self.notVerifiedRole)
                     await userForVerificationMsg.add_roles(self.peopleRole)
                     #await putScheduleInChannel(userForVerificationMsg, bot.botData['schedules'][str(userForVerificationMsg.id)]) #bot.schedules[userForVerificationMsg.id]
-                    await self.welcome_verify.send(f"**{userForVerificationMsg.mention}** is now verified.")
+                    await self.welcome_verify.send(f"{userForVerificationMsg.mention} is now verified.")
+                    await self.modVerify.send(f"**{userForVerificationMsg}** is now verified.")
                     # bot.botData['schedules'].pop(str(userForVerificationMsg.id))
                     # await bot.database.save_data(bot.botData)
 
