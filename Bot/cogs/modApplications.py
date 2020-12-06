@@ -15,6 +15,8 @@ class ModApplications(commands.Cog):
     async def cog_check(self, ctx):
         if isinstance(ctx, commands.Context):
             return ctx.guild.id in self.servers
+        elif ctx == None:
+            return True
         else:
             return ctx.id in self.servers
 
@@ -58,13 +60,15 @@ class ModApplications(commands.Cog):
                         message = await user.dm_channel.fetch_message(payload.message_id)
                     except discord.errors.HTTPException as e:
                         print(e)
-                
-            questions = self.bot.botData['applicationData']['userApplicationData'][str(payload.user_id)].get('modQuestions')
-            if (questions != None):
-                qEmbed = message.embeds[0].to_dict()
-                if ((payload.emoji.name == '💬') & (qEmbed in questions)):
-                    await self._respond(payload.user_id, qEmbed)
-                    return
+            
+            appData = self.bot.botData['applicationData']['userApplicationData'].get(str(payload.user_id))
+            if (appData != None):
+                questions = appData.get('modQuestions')
+                if (questions != None):
+                    qEmbed = message.embeds[0].to_dict()
+                    if ((payload.emoji.name == '💬') & (qEmbed in questions)):
+                        await self._respond(payload.user_id, qEmbed)
+                        return
 
     @commands.Cog.listener()
     async def on_message(self, message):
