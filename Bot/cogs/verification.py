@@ -111,7 +111,7 @@ class Verification(commands.Cog):
                     # await bot.database.save_data(bot.botData)
 
     def _schoolRoleCheck(self, member:discord.Member):
-        subjects = ['english', 'history', 'math', 'PE', 'science'] # for now don't do elective
+        subjects = ['english', 'history', 'math', 'PE', 'dance', 'science'] # for now don't do elective
         electives = ['Band', 'Art', 'Gateway', 'Spanish']
         takenSubjects = []
         gradeTaken = False
