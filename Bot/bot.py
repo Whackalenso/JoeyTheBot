@@ -3,6 +3,7 @@ from discord.ext import commands
 from discord.utils import get
 import discordDatabase
 import os
+import heroku3
 
 intents = discord.Intents.default()
 intents.members = True
@@ -51,6 +52,22 @@ async def on_ready():
 
 	print("Bot online\nSystems a go-go")
 	await bot.change_presence(activity=discord.Activity(name="PPC",type=discord.ActivityType.watching))
+
+@bot.command()
+async def reviveCyberweb(ctx):
+	cyberweb = get(ctx.guild.members, id=738628391908933683)
+	if cyberweb.status != discord.Status.offline:
+		await ctx.send("Cyberweb doesn't seem to be dead right now.")
+		return
+
+	heroku = heroku3.from_key(bot.herokuKey)
+	app = heroku.apps()[0]
+
+	if app.dynos()[0].status == 'down':
+		await ctx.send("Cyberweb seems to be down for a reason. Ask Nigel about this if you want.")
+	else:
+		app.restart()
+		await ctx.send("Cyberweb has been restarted and will be online shortly.") # `(If this doesn't work, it may be that Cyberweb ran out of free hosting for the month and will come back next month)`
 	
 @bot.command()
 async def roleAmount(ctx, *, roleStr):
@@ -85,6 +102,10 @@ async def on_message(message):
 # 	embed.set_footer(text="All commands all case insensitive (whether you use capital letters doesn't matter for typing a command). Also don't actually include the <>.")
 
 if (__name__ == '__main__'):
-	with open('./token.txt') as t: #prob dont need to do ./ but eh
+	#prob dont need to do ./ but eh
+	with open('./herokuKey.txt') as f:
+		bot.herokuKey = f.read()
+
+	with open('./token.txt') as t:
 		token = t.read()
 	bot.run(token)
