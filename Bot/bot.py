@@ -55,15 +55,10 @@ async def on_ready():
 
 @bot.command()
 async def reviveCyberweb(ctx):
-	cyberweb = get(ctx.guild.members, id=738628391908933683)
-	if cyberweb.status != discord.Status.offline:
-		await ctx.send("Cyberweb doesn't seem to be dead right now.")
-		return
-
 	heroku = heroku3.from_key(bot.herokuKey)
 	app = heroku.apps()[0]
 
-	if app.dynos()[0].status == 'down':
+	if app.dynos()[0].state == 'down':
 		await ctx.send("Cyberweb seems to be down for a reason. Ask Nigel about this if you want.")
 	else:
 		app.restart()
