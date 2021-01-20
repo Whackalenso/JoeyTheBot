@@ -1,5 +1,5 @@
 import discord
-from discord.ext import commands
+from discord.ext import commands, tasks
 from discord.utils import get
 import discordDatabase
 import os
@@ -43,6 +43,8 @@ async def on_ready():
 
 	bot.guild = bot.get_guild(755021484686180432)
 	bot.botRole = get(bot.guild.roles, id=755137354888511498)
+	bot.cyberweb = await bot.fetch_user(738628391908933683)
+	bot.redditChan = await bot.fetch_channel(773383060653604874)
 
 	for c in os.listdir(f'{bot.mainFolder}/Bot/cogs'):
 		if (c != '__pycache__'):
@@ -80,6 +82,15 @@ async def on_message(message):
 
 	await bot.process_commands(message)
 
+@tasks.loop(minutes=1)
+async def checkIfCyberdead():
+	if bot.cyberweb.status == discord.Status.offline:
+		await reviveCyberweb(bot.redditChan)
+
+@checkIfCyberdead.before_loop
+async def before_loop():
+	await bot.wait_until_ready()
+
 # @bot.command()
 # async def help(ctx): # , *, _arg:Union[str, None]
 # 	verificationValue = '''`.setName <your name>` | Sets your name.
@@ -103,4 +114,6 @@ if (__name__ == '__main__'):
 
 	with open('./token.txt') as t:
 		token = t.read()
+	
+	checkIfCyberdead.start()
 	bot.run(token)
