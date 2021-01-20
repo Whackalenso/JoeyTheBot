@@ -83,9 +83,8 @@ async def on_message(message):
 
 @tasks.loop(minutes=1)
 async def checkIfCyberdead():
-	await bot.redditChan.send(f"Cyberweb status: {bot.cyberweb.status}")
-	# if bot.cyberweb.status == discord.Status.offline:
-	# 	await reviveCyberweb(bot.redditChan)
+	if bot.cyberweb.status == discord.Status.offline:
+		await reviveCyberweb(bot.redditChan)
 
 @checkIfCyberdead.before_loop
 async def before_loop():
