@@ -5,8 +5,9 @@ import discordDatabase
 import os
 import heroku3
 
-intents = discord.Intents.default()
-intents.members = True
+intents = discord.Intents.all() #defalt()
+# intents.members = True
+# intents.presences = True
 bot = commands.Bot(command_prefix='.', case_insensitive=True, intents=intents)
 #bot.remove_command('help')
 
@@ -43,8 +44,6 @@ async def on_ready():
 
 	bot.guild = bot.get_guild(755021484686180432)
 	bot.botRole = get(bot.guild.roles, id=755137354888511498)
-	bot.cyberweb = await bot.fetch_user(738628391908933683)
-	bot.redditChan = await bot.fetch_channel(773383060653604874)
 
 	for c in os.listdir(f'{bot.mainFolder}/Bot/cogs'):
 		if (c != '__pycache__'):
@@ -84,12 +83,16 @@ async def on_message(message):
 
 @tasks.loop(minutes=1)
 async def checkIfCyberdead():
-	if bot.cyberweb.status == discord.Status.offline:
-		await reviveCyberweb(bot.redditChan)
+	await bot.redditChan.send(f"Cyberweb status: {bot.cyberweb.status}")
+	# if bot.cyberweb.status == discord.Status.offline:
+	# 	await reviveCyberweb(bot.redditChan)
 
 @checkIfCyberdead.before_loop
 async def before_loop():
 	await bot.wait_until_ready()
+	korem = bot.get_guild(755021484686180432)
+	bot.cyberweb = korem.get_member(738628391908933683)
+	bot.redditChan = korem.get_channel(773383060653604874)
 
 # @bot.command()
 # async def help(ctx): # , *, _arg:Union[str, None]
