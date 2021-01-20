@@ -7,7 +7,7 @@ import heroku3
 
 intents = discord.Intents.default()
 intents.members = True
-bot = commands.Bot(command_prefix = '.', case_insensitive = True, intents=intents)
+bot = commands.Bot(command_prefix='.', case_insensitive=True, intents=intents)
 #bot.remove_command('help')
 
 bot.guild = ''
