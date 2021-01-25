@@ -117,5 +117,5 @@ if (__name__ == '__main__'):
 	with open('./token.txt') as t:
 		token = t.read()
 	
-	checkIfCyberdead.start()
+	#checkIfCyberdead.start()
 	bot.run(token)
