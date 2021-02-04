@@ -112,7 +112,7 @@ class Verification(commands.Cog):
 
     def _schoolRoleCheck(self, member:discord.Member):
         subjects = ['english', 'history', 'math', 'PE', 'dance', 'science'] # for now don't do elective
-        electives = ['Band', 'Art', 'Gateway', 'Spanish']
+        electives = ['Band', 'Art', 'Gateway', 'Spanish', 'Leadership']
         takenSubjects = []
         gradeTaken = False
         electiveTaken = False
