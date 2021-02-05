@@ -111,7 +111,8 @@ class Verification(commands.Cog):
                     # await bot.database.save_data(bot.botData)
 
     def _schoolRoleCheck(self, member:discord.Member):
-        subjects = ['english', 'history', 'math', 'PE', 'dance', 'science'] # for now don't do elective
+        subjects = ['english', 'history', 'math', 'PE', 'dance', 'science']
+        reqSubjects = subjects.remove('dance')
         electives = ['Band', 'Art', 'Gateway', 'Spanish', 'Leadership']
         takenSubjects = []
         gradeTaken = False
@@ -119,14 +120,17 @@ class Verification(commands.Cog):
         for r in member.roles:
             for s in subjects:
                 if (r.name.endswith(f" - {s}")):
-                    takenSubjects.append(s)
+                    if s == 'dance':
+                        takenSubjects.append('PE')
+                    else:
+                        takenSubjects.append(s)
                 if ('grade' in r.name.lower()):
                     gradeTaken = True
             for e in electives:
                 if (r.name == e):
                     electiveTaken = True
                     break
-        if ((all([s in takenSubjects for s in subjects])) & (gradeTaken) & (electiveTaken)):
+        if ((all([s in takenSubjects for s in reqSubjects])) & (gradeTaken) & (electiveTaken)):
             return True
         if (get(member.roles, id=773395171420667923) != None): #not student
             return True
