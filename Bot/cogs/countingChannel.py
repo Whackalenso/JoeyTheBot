@@ -34,6 +34,10 @@ class CountingChannel(commands.Cog):
 
             await message.delete()
 
+    # @commands.Cog.listener()
+    # async def on_raw_message_edit(self, payload):
+        
+
 
 def setup(bot):
     bot.add_cog(CountingChannel(bot))
