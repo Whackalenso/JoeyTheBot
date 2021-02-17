@@ -112,7 +112,8 @@ class Verification(commands.Cog):
 
     def _schoolRoleCheck(self, member:discord.Member):
         subjects = ['english', 'history', 'math', 'PE', 'dance', 'science']
-        reqSubjects = subjects.remove('dance')
+        reqSubjects = subjects.copy()
+        reqSubjects.remove('dance')
         electives = ['Band', 'Art', 'Gateway', 'Spanish', 'Leadership']
         takenSubjects = []
         gradeTaken = False
