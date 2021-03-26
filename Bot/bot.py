@@ -4,10 +4,9 @@ from discord.utils import get
 import discordDatabase
 import os
 import heroku3
+import matplotlib.pyplot as plt
 
-intents = discord.Intents.all() #defalt()
-# intents.members = True
-# intents.presences = True
+intents = discord.Intents.all()
 bot = commands.Bot(command_prefix='.', case_insensitive=True, intents=intents)
 #bot.remove_command('help')
 
@@ -52,7 +51,47 @@ async def on_ready():
 			print(f"Loaded cog: {cogStr}")
 
 	print("Bot online\nSystems a go-go")
-	await bot.change_presence(activity=discord.Activity(name="PPC",type=discord.ActivityType.watching))
+	await bot.change_presence(activity=discord.Activity(name="btw if im not responding it might just be cuz im slow",type=discord.ActivityType.playing))
+
+@bot.command()
+async def members(ctx):
+	membs = ctx.guild.members
+	stufs = {
+		"Not Verified": [0, ctx.guild.get_role(755146208623984741)],
+		"Bots": [0, ctx.guild.get_role(755137354888511498)],
+		"7th Grade": [0, ctx.guild.get_role(755166578290458654)],
+		"8th Grade": [0, ctx.guild.get_role(755166669856440512)],
+		"Not Korematsu Student": [0, ctx.guild.get_role(773395171420667923)]}
+	items = list(stufs.items())
+	for m in membs:
+		for n, v in items:
+			if v[1] in m.roles:
+				stufs[n][0] += 1
+	
+	embed = discord.Embed( 
+		description=f"*Total Members - **{len(membs)}***", 
+		color=discord.Color.blue())
+	embed.set_author(name="Server Members", icon_url=ctx.guild.icon_url)
+	for i in [list(items[0]), list(items[1])]:
+		embed.add_field(name=i[0], value=i[1][0], inline=False)
+
+	# Pie chart, where the slices will be ordered and plotted counter-clockwise:
+	gradeList = [list(items[2]), list(items[3]), list(items[4])]
+
+	fig1, ax1 = plt.subplots()
+	values = [g[1][0] for g in gradeList]
+	def my_autopct(pct):
+		total = sum(values)
+		val = int(round(pct*total/100.0))
+		return '{p:.0f}%  ({v:d})'.format(p=pct,v=val)
+
+	ax1.pie(values, labels=[g[0] for g in gradeList], autopct=my_autopct, startangle=90)
+	ax1.axis('equal')  # Equal aspect ratio ensures that pie is drawn as a circle.
+	plt.savefig('tempFig.png', bbox_inches = 'tight',)
+	embed.set_image(url="attachment://tempFig.png")
+	_file = discord.File('tempFig.png')
+	
+	await ctx.send(embed=embed, file=_file)
 
 @bot.command()
 async def reviveCyberweb(ctx):
@@ -92,6 +131,14 @@ async def before_loop():
 	korem = bot.get_guild(755021484686180432)
 	bot.cyberweb = korem.get_member(738628391908933683)
 	bot.redditChan = korem.get_channel(773383060653604874)
+
+# @bot.event
+# async def on_member_update(before, after):
+# 	_role = await get()
+# 	if (_role in after.roles) & (before.roles != after.roles):
+# 		isUserReady = await self._isUserReady(after)
+# 		if (isUserReady):
+# 			await self._userIsReady(after)
 
 # @bot.command()
 # async def help(ctx): # , *, _arg:Union[str, None]
