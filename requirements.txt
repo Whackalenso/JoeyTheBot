@@ -2,3 +2,6 @@ discord
 dnspython
 matplotlib
 heroku3
+requests
+bs4
+time

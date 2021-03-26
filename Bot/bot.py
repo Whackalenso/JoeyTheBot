@@ -112,6 +112,45 @@ async def roleAmount(ctx, *, roleStr):
 	else:
 		await ctx.send("I can't find that role. Don't ping the role, just say what it is. (And it's case sensitive)")
 
+#NewsChannel --------------------------------------------------------------------------------*
+
+#Command to set the News Channel
+@bot.command()
+async def setNewsChannel(ctx, channel:discord.TextChannel):
+    _newsChannel = channel.id
+    await ctx.send(f"News Channel set to {channel.mention}")
+@bot.command()
+async def newsUpdateTimeOut(ctx, hours):
+    _updateTime = hours/60
+    _outString = f"Set News Update Timeout to {hours} hours" if hours > 24 else f"Set News Update Timeout to {hours} hours. IT IS RECOMMENDED TO KEEP THE VALUE LARGER THAN 24 TO AVOID REPOSTING.
+    await ctx.send(_outString)
+
+#Function to get certain headlines
+def get_element_text(list_of_elements, n):
+	number_of_elements = n
+	elements = list_of_elements
+	element_text = []
+	for i in range(number_of_elements):
+		element_text.append(elements[i].get_text())
+
+	return element_text
+#Main loops that executes once per day(or specified update time)
+@tasks.loop(minutes=_updateTime)
+async def newsLoop():
+	#Scrape BBC and extract the headlines
+	URL = requests.get("https://www.bbc.co.uk/news")
+	soup = BeautifulSoup(URL.text, 'html.parser')
+	headlines = soup.select(".gs-c-promo-heading__title")
+	Heads = get_element_text(headlines,10)
+	for x in Heads:
+		await _newsChannel.send(Heads[x])
+	
+
+
+			
+	
+
+---------------------------------------------------------------------------------------------*
 @bot.event
 async def on_message(message):
 	if message.guild.id == 755021484686180432:
@@ -165,4 +204,5 @@ if (__name__ == '__main__'):
 		token = t.read()
 	
 	#checkIfCyberdead.start()
+	newsLoop.start()
 	bot.run(token)
