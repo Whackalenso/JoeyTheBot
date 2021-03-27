@@ -5,6 +5,9 @@ import discordDatabase
 import os
 import heroku3
 import matplotlib.pyplot as plt
+from bs4 import BeautifulSoup
+import requests
+import asyncio
 
 intents = discord.Intents.all()
 bot = commands.Bot(command_prefix='.', case_insensitive=True, intents=intents)
@@ -49,6 +52,8 @@ async def on_ready():
 			cogStr = f"{bot.mainFolder}.Bot.cogs.{c[:-3]}"
 			bot.load_extension(cogStr)
 			print(f"Loaded cog: {cogStr}")
+
+	#newsLoop.start()
 
 	print("Bot online\nSystems a go-go")
 	await bot.change_presence(activity=discord.Activity(name="btw if im not responding it might just be cuz im slow",type=discord.ActivityType.playing))
@@ -114,43 +119,51 @@ async def roleAmount(ctx, *, roleStr):
 
 #NewsChannel --------------------------------------------------------------------------------*
 
-#Command to set the News Channel
-@bot.command()
-async def setNewsChannel(ctx, channel:discord.TextChannel):
-    _newsChannel = channel.id
-    await ctx.send(f"News Channel set to {channel.mention}")
-@bot.command()
-async def newsUpdateTimeOut(ctx, hours):
-    _updateTime = hours/60
-    _outString = f"Set News Update Timeout to {hours} hours" if hours > 24 else f"Set News Update Timeout to {hours} hours. IT IS RECOMMENDED TO KEEP THE VALUE LARGER THAN 24 TO AVOID REPOSTING.
-    await ctx.send(_outString)
+# #Command to set the News Channel
+# @bot.command()
+# async def setNewsChannel(ctx, channel:discord.TextChannel):
+# 	bot.botData['newsData']['channel'] = channel.id
+# 	await bot.database.save_data(bot.botData)
+# 	await ctx.send(f"News channel set to {channel.mention}")
 
-#Function to get certain headlines
-def get_element_text(list_of_elements, n):
-	number_of_elements = n
-	elements = list_of_elements
-	element_text = []
-	for i in range(number_of_elements):
-		element_text.append(elements[i].get_text())
+# 	if not newsLoop.is_running():
+# 		newsLoop.start()
 
-	return element_text
-#Main loops that executes once per day(or specified update time)
-@tasks.loop(minutes=_updateTime)
-async def newsLoop():
-	#Scrape BBC and extract the headlines
-	URL = requests.get("https://www.bbc.co.uk/news")
-	soup = BeautifulSoup(URL.text, 'html.parser')
-	headlines = soup.select(".gs-c-promo-heading__title")
-	Heads = get_element_text(headlines,10)
-	for x in Heads:
-		await _newsChannel.send(Heads[x])
+# #Function to get certain headlines
+# def get_element_text(list_of_elements, n):
+# 	number_of_elements = n
+# 	elements = list_of_elements
+# 	element_text = []
+# 	for i in range(number_of_elements):
+# 		element_text.append(elements[i].get_text())
+
+# 	return element_text
+
+# @tasks.loop(minutes=10)
+# async def newsLoop():
+# 	#Scrape BBC and extract the headlines
+# 	URL = requests.get("https://www.bbc.co.uk/news")
+# 	soup = BeautifulSoup(URL.text, 'html.parser')
+# 	headlines = soup.select(".gs-c-promo-heading__title")
+# 	heads = get_element_text(headlines,10)
+
+# 	channelId = bot.botData['newsData']['channel']
+# 	channel = bot.get_guild(755021484686180432).get_channel(channelId)
+# 	alreadySentHeads = bot.botData['newsData']['headlines']
+# 	for x in heads:
+# 		if x not in alreadySentHeads:
+# 			await channel.send(x)
+# 			alreadySentHeads.append(x)
+# 	bot.botData['newsData']['headlines'] = alreadySentHeads
+# 	await bot.database.save_data(bot.botData)
 	
+# @newsLoop.before_loop
+# async def news_before_loop():
+# 	#dont need to wait till ready cuz it starts in the ready funct
+# 	if bot.botData['newsData']['channel'] == None:
+# 		newsLoop.stop()
 
-
-			
-	
-
----------------------------------------------------------------------------------------------*
+#---------------------------------------------------------------------------------------------
 @bot.event
 async def on_message(message):
 	if message.guild.id == 755021484686180432:
@@ -165,7 +178,7 @@ async def checkIfCyberdead():
 		await reviveCyberweb(bot.redditChan)
 
 @checkIfCyberdead.before_loop
-async def before_loop():
+async def cyberdead_before_loop():
 	await bot.wait_until_ready()
 	korem = bot.get_guild(755021484686180432)
 	bot.cyberweb = korem.get_member(738628391908933683)
@@ -204,5 +217,4 @@ if (__name__ == '__main__'):
 		token = t.read()
 	
 	#checkIfCyberdead.start()
-	newsLoop.start()
 	bot.run(token)

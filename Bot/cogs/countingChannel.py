@@ -14,6 +14,20 @@ class CountingChannel(commands.Cog):
         else:
             return ctx.id in self.servers
 
+    async def deleteMaybe(self, _message, _history):
+        content = _message.content.replace('\n', '')
+        if (content.isnumeric()):
+            try:
+                prevMsg = _history[1]
+                prev = int(prevMsg.content)
+            except:
+                return
+
+            if (prevMsg.author.id != _message.author.id) & (int(content)-1 == prev):
+                return
+
+        await _message.delete()
+
     @commands.Cog.listener()
     async def on_message(self, message):
         if not await self.cog_check(message.guild):
@@ -21,23 +35,22 @@ class CountingChannel(commands.Cog):
 
         chan = message.channel
         if (chan.id == 775803582720639017):
-            if (message.content.isnumeric()):
-                history = await chan.history(limit=2).flatten()
-                try:
-                    prevMsg = history[1]
-                    prev = int(prevMsg.content)
-                except:
-                    return
+            history = await chan.history(limit=2).flatten()
+            await self.deleteMaybe(message, history)
 
-                if (prevMsg.author.id != message.author.id) & (int(message.content)-1 == prev):
-                    return
+    @commands.Cog.listener()
+    async def on_raw_message_edit(self, payload):
+        channel = self.bot.get_channel(payload.channel_id)
+        if channel.id != 775803582720639017:
+            return
 
-            await message.delete()
+        message = await channel.fetch_message(payload.message_id)
 
-    # @commands.Cog.listener()
-    # async def on_raw_message_edit(self, payload):
-        
+        hist = await channel.history(limit=2).flatten()
+        if message != hist[0]:
+            return
 
+        await self.deleteMaybe(message, hist)
 
 def setup(bot):
     bot.add_cog(CountingChannel(bot))

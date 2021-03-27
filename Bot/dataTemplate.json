@@ -6,5 +6,9 @@
         "modMsgs": {},
         "anonymousApplications": true,
         "questions": []
+    },
+    "newsData": {
+        "channel": null,
+        "headlines": []
     }
 }
