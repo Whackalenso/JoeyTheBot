@@ -8,6 +8,7 @@ import matplotlib.pyplot as plt
 from bs4 import BeautifulSoup
 import requests
 import asyncio
+import io
 
 intents = discord.Intents.all()
 bot = commands.Bot(command_prefix='.', case_insensitive=True, intents=intents)
@@ -137,6 +138,34 @@ async def cyberdead_before_loop():
 	korem = bot.get_guild(755021484686180432)
 	bot.cyberweb = korem.get_member(738628391908933683)
 	bot.redditChan = korem.get_channel(773383060653604874)
+
+@bot.event
+async def on_guild_emojis_update(guild, before, after):
+	channel = guild.get_channel(755021484686180435) #announcements
+	if channel == None: #just in case
+		return
+
+	updates = [] #it should only be one but it returns a list so imma just do a list just in case somehow there can be multiple updates in 1 event
+	updateType = ''
+	removed = False
+	if len(after) < len(before):
+		updates = [e for e in before if e not in after]
+		updateType = "removed from the server :("
+		removed = True
+	else:
+		updates = [e for e in after if e not in before]
+		if len(before) == len(after):
+			updateType = "updated" #I'm pretty sure this won't actually happen but just in case u kno
+		else:
+			updateType = "added to the server :)"
+
+	for u in updates:
+		img = None
+		if removed:
+			f = io.BytesIO()
+			await u.url_as().save(f)
+			img = discord.File(f, filename=str(u)+'.png')
+		await channel.send(content=f"The emoji {u} was {updateType}", file=img)
 
 # @bot.event
 # async def on_member_update(before, after):
