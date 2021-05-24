@@ -133,8 +133,15 @@ class Verification(commands.Cog):
                     break
         if ((all([s in takenSubjects for s in reqSubjects])) & (gradeTaken) & (electiveTaken)):
             return True
-        if (get(member.roles, id=773395171420667923) != None): #not student
-            return True
+        
+        notStudentRoles = [
+            773395171420667923, #Other Not Student
+            846194745474678794, #Upcoming Student
+            776964495075311648 #OG
+        ]
+        for r in notStudentRoles:
+            if get(member.roles, id=r) != None:
+                return True
         
         return False
 
