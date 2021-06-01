@@ -60,6 +60,18 @@ async def on_ready():
 	print("Bot online\nSystems a go-go")
 	await bot.change_presence(activity=discord.Activity(name="btw if im not responding it might just be cuz im slow",type=discord.ActivityType.playing))
 
+	await stageChannelConnect()
+
+async def stageChannelConnect():
+	guild = bot.get_guild(755021484686180432)
+	stage = guild.get_channel(849356935538016296)
+	try:
+		await stage.connect()
+	except:
+		return
+
+	await guild.me.edit(suppress=False)
+
 @bot.command()
 async def members(ctx):
 	membs = ctx.guild.members
