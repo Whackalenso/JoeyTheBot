@@ -125,6 +125,10 @@ async def on_message(message):
 		if ((message.author.id == 690291831564533810) & (message.channel.id == 774365865273065492) &(len(message.attachments) > 0)): #that uesr id is macie and the channel id is cake
 			await message.pin()
 
+	# postThisCatInstantly = 'https://media.tenor.co/videos/833fcee6529b92bf986bb7fba64d9e0d/mp4'
+	# if (message.content == postThisCatInstantly) & (message.author != message.guild.me):
+	# 	await message.channel.send(postThisCatInstantly)
+
 	await bot.process_commands(message)
 
 @tasks.loop(minutes=1)
@@ -190,6 +194,21 @@ async def on_guild_emojis_update(guild, before, after):
 # 	if (ctx.author.guild_permissions.administrator): embed.add_field(name="Admin", value=adminValue)
 # 	embed.add_field(name="Other", value=otherValue)
 # 	embed.set_footer(text="All commands all case insensitive (whether you use capital letters doesn't matter for typing a command). Also don't actually include the <>.")
+
+# @bot.event
+# async def on_voice_state_update(member, before, after):
+# 	stage = member.guild.get_channel(849408165644075008)
+# 	groovy = member.guild.get_member(234395307759108106)
+
+# 	if (before.channel == stage) & (after.channel != stage): #member leaves music
+# 		members = 0
+# 		for m in stage.members:
+# 			if not m.bot:
+# 				members += 1
+# 		if members == 0:
+# 			await stage.edit(topic=None)
+
+# 	if 
 
 if (__name__ == '__main__'):
 	#prob dont need to do ./ but eh
