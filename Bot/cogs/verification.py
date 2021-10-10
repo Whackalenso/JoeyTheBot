@@ -114,10 +114,10 @@ class Verification(commands.Cog):
         subjects = ['english', 'history', 'math', 'PE', 'dance', 'science']
         reqSubjects = subjects.copy()
         reqSubjects.remove('dance')
-        electives = ['Band', 'Art', 'Gateway', 'Spanish', 'Leadership']
+        #electives = ['Band', 'Art', 'Gateway', 'Spanish', 'Leadership', 'Journalism']
         takenSubjects = []
         gradeTaken = False
-        electiveTaken = False
+        #electiveTaken = False
         for r in member.roles:
             for s in subjects:
                 if (r.name.endswith(f" - {s}")):
@@ -127,11 +127,11 @@ class Verification(commands.Cog):
                         takenSubjects.append(s)
                 if ('grade' in r.name.lower()):
                     gradeTaken = True
-            for e in electives:
-                if (r.name == e):
-                    electiveTaken = True
-                    break
-        if ((all([s in takenSubjects for s in reqSubjects])) & (gradeTaken) & (electiveTaken)):
+            # for e in electives:
+            #     if (r.name == e):
+            #         electiveTaken = True
+            #         break
+        if ((all([s in takenSubjects for s in reqSubjects])) & (gradeTaken)): # & (electiveTaken)):
             return True
         
         notStudentRoles = [
