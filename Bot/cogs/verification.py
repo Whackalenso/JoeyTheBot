@@ -32,7 +32,7 @@ class Verification(commands.Cog):
             return ctx.id in self.servers
 
     def updateData(self, data):
-        for c in os.listdir(f'{self.bot.mainFolder}/Bot/cogs'):
+        for c in os.listdir(f'Bot/cogs'):
             if ('Verification' != c.capitalize()):
                 cog = self.bot.get_cog(c.capitalize())
                 if (cog != None):

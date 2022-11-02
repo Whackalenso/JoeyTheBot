@@ -6,7 +6,7 @@ import re
 class ContentFilter(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        with open(f'{bot.mainFolder}/Bot/profanity_wordlist.txt', 'r') as f: 
+        with open(f'Bot/profanity_wordlist.txt', 'r') as f: 
             self.word_list = f.read().splitlines()
         for word in range(len(self.word_list)):
             self.word_list[word] = list(profanity._generate_patterns_from_word(self.word_list[word]))

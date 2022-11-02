@@ -3,3 +3,4 @@ dnspython
 matplotlib
 requests
 bs4
+dotenv

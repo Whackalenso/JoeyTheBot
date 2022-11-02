@@ -2,12 +2,15 @@ import discord
 from discord.ext import commands, tasks
 from discord.utils import get
 import discordDatabase
+from dotenv import load_dotenv
 import os
 import matplotlib.pyplot as plt
 from bs4 import BeautifulSoup
 import requests
 import asyncio
 import io
+
+load_dotenv()
 
 intents = discord.Intents.all()
 bot = commands.Bot(command_prefix='.', case_insensitive=True, intents=intents)
@@ -17,7 +20,6 @@ bot.guild = ''
 bot.botRole = ''
 bot.database = ''
 bot.botData = {}
-bot.mainFolder = 'JoeyTheBot'
 # for d in next(os.walk('.'))[1]:
 # 	if (not d.startswith('.')):
 # 		bot.mainFolder = d
@@ -48,9 +50,9 @@ async def on_ready():
 	bot.guild = bot.get_guild(755021484686180432)
 	bot.botRole = get(bot.guild.roles, id=755137354888511498)
 
-	for c in os.listdir(f'{bot.mainFolder}/Bot/cogs'):
+	for c in os.listdir(f'Bot/cogs'):
 		if (c != '__pycache__'):
-			cogStr = f"{bot.mainFolder}.Bot.cogs.{c[:-3]}"
+			cogStr = f"Bot.cogs.{c[:-3]}"
 			bot.load_extension(cogStr)
 			print(f"Loaded cog: {cogStr}")
 
@@ -187,10 +189,4 @@ async def on_guild_emojis_update(guild, before, after):
 # 	if 
 
 if (__name__ == '__main__'):
-	#prob dont need to do ./ but eh
-
-	with open('./token.txt') as t:
-		token = t.read()
-	
-	#checkIfCyberdead.start()
-	bot.run(token)
+	bot.run(os.environ.get('TOKEN'))

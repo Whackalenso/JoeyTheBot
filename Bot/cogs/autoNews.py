@@ -11,7 +11,7 @@ class AutoNews(commands.Cog):
         self.newsLoop.start() # pylint: disable=no-member
 
     def updateData(self, data):
-        for c in os.listdir(f'{self.bot.mainFolder}/Bot/cogs'):
+        for c in os.listdir(f'Bot/cogs'):
             if ('AutoNews' != c.capitalize()):
                 cog = self.bot.get_cog(c.capitalize())
                 if (cog != None):
